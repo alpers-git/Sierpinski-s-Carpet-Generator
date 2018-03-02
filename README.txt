@@ -1,0 +1,2 @@
+This program requires some additional material provided in Source. I borrowed elements from proived materials in the example codes of course website.
+To run the program just open up google chrome and drag and drop sierpinski.html file.

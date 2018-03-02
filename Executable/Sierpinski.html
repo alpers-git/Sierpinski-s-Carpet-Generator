@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        
+        varying vec4 fColor;
+    void main(){
+        gl_Position = vPosition;
+        fColor = vColor;
+    }
+</script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    precision highp float;
+
+    precision mediump float;
+    varying vec4 fColor;
+
+    void main(){
+        gl_FragColor = fColor;
+    }
+</script>
+
+<script type="text/javascript" src="../Source/webgl-utils.js"></script>
+<script type="text/javascript" src="../Source/initShaders.js"></script>
+<script type="text/javascript" src="../Source/MV.js"></script>
+<script type="text/javascript" src="../Source/w3.js"></script>
+<script type="text/javascript" src="Sierpinski.js"></script>
+</head>
+<body>
+        <div align = "center"> <b> <font color="black" face="verdana" size = "6">Welcome to Sierpinski's Carpet Generator </font> </b></div>
+<canvas id="gl-canvas" width="1500" height="500">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+    <br>
+        <div align = "center"> <b> <font color = "#484f49"> Click and drag your mouse to form the initial rectangle </font> </b></div>
+    
+        </div>
+        Foreground Color: <input type="color" id = "fColor" value="#00e826">
+        Background Color: <input type="color" id= "bColor" value="#000000">
+        <div>
+        recursive steps 1
+        <input id="slider" type="range" min="1" max="5" step="1" value="1" /> 5
+        </div>
+        <form action="">
+            <input type="radio" name="drawMethod" value="Contour"> Contour<br>
+            <input type="radio" name="drawMethod" value="Filled" checked> Filled<br>
+        </form>
+        <div>
+            <br>
+            Save Fractal:
+                <br>
+                    <button id= "saveButton">Download</button>
+                </br>
+            Load Fractal:
+                <br>
+                    <input type="file" id="loadButton" name="loadFile" >
+                </br>
+            </br>
+    </br>
+</body>
+</html>
+
