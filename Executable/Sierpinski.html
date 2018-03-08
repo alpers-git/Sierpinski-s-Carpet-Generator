@@ -3,7 +3,7 @@
 <head>
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute vec4 vPosition;
-        attribute vec4 vColor;
+        uniform vec4 vColor;
         
         varying vec4 fColor;
     void main(){
@@ -30,11 +30,11 @@
 </head>
 <body>
         <div align = "center"> <b> <font color="black" face="verdana" size = "6">Welcome to Sierpinski's Carpet Generator </font> </b></div>
-<canvas id="gl-canvas" width="1500" height="500">
+<canvas id="gl-canvas" width="1500" height="600">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
     <br>
-        <div align = "center"> <b> <font color = "#484f49"> Click and drag your mouse to form the initial rectangle </font> </b></div>
+        <div align = "center" > <b> <font color = "#484f49"> Click and drag your mouse to form the initial rectangle </font> </b></div>
     
         </div>
         Foreground Color: <input type="color" id = "fColor" value="#00e826">

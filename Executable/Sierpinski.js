@@ -1,7 +1,26 @@
+/*
+Author: Alper Şahıstan,
+ID:21501207,
+CS465 Computer Graphics Assignment 1, Bilkent University
+
+This is a simple webGL application A simple Sierpinsky's carpet fractal generator. 
+Features include: Drag and draw interface, color pickers, slider for recursive steps, 
+save and load buttons for desired creations, switch for contour/ filled look
+
+The input parameters that are taken from HTML file are used to form the fractal.
+Clicked mouse locations are used to set the vertices array which is an initial
+input for divideRectangles method. Then this method divides the current screen into
+9 pieces and draws a full rectangle for ceter piece and 1/9 size rectangles to 8 of the 
+surrounding pieces until the defined recursion dept. Each call to the rectangle method pushes
+vertices to the vertex buffer. After that render method is called in which draws the vertices
+using either gl.LINE_LOOP or gl.TRIANGLE_FAN(specified by the user). drawArrays are called for
+every 4 points in the so that it draws every rectangle separately
+*/
+
 //In this code I took a look at example files of book provided at Dr.Güdükbay's website.
 //It was mainly used to understand the buffers and shaders in webGL
 //I used gasket5.html and gasket5.js to learn the usegae of sliders.
-//Additionally js and html components such as buttons and colors pickers were reasearched and learned from https://www.w3schools.com/
+//Additionally js and html components such as buttons and colors pickers were mainly reasearched and learned from https://www.w3schools.com/
 
 var gl;
 var points = [];
@@ -26,40 +45,28 @@ function init(){
 
 divideRectangles(vertices[0], vertices[1], recursiveSteps);
 
-//  Configure WebGL   
-//    
+//cad2.js file is used for gl init that STARTS HERE -//-
+//  Configure WebGL       
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( backGroundColor[0], backGroundColor[1], backGroundColor[2], backGroundColor[3]);   
      
 //  Load shaders and initialize attribute buffers
-
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );        
 
 //loop up for vertex data        
     var vPosition = gl.getAttribLocation( program, "vPosition" );
-    var vColor = gl.getAttribLocation( program, "vColor");
 
 //Create vertices buffer
     var bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
 
-//Create color buffer
-    var colorBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, colorBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
-
-
-//
+//Binding Vertex buffer
     gl.enableVertexAttribArray( vPosition );
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
     gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(vColor);
-    gl.bindBuffer( gl.ARRAY_BUFFER, colorBuffer );
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, true, 0, 0);
-
+//ENDS HERE -//-
 
     // Initialize event handlers
     //slider
@@ -71,7 +78,7 @@ divideRectangles(vertices[0], vertices[1], recursiveSteps);
 
     //radios
     var radios = document.getElementsByName('drawMethod');
-    if (radios[0].checked) 
+    if (radios[0].checked)
     {
         primitiveType = gl.LINE_LOOP;
     }
@@ -81,11 +88,14 @@ divideRectangles(vertices[0], vertices[1], recursiveSteps);
     }
     
     //colorpickers
+    var colorLoc = gl.getUniformLocation(program, "vColor");
+
     //foreGround
     var foreGroundColorPicker = document.getElementById("fColor");
     foreGroundColorPicker.onchange = function() {
         foreGroundColor = hexToRGB(foreGroundColorPicker.value);
     }
+    gl.uniform4fv(colorLoc, foreGroundColor);//set uniform variable
 
     //background
     var backGroundColorPicker = document.getElementById("bColor");
@@ -115,7 +125,7 @@ divideRectangles(vertices[0], vertices[1], recursiveSteps);
         if(trackMouse)
         {
             var vertex2= vec2(2*event.clientX/canvas.width-1, 
-                2*(canvas.height-event.clientY)/canvas.height-1);
+                2*(canvas.height-event.clientY + 45)/canvas.height-1);
             //rectangle method requires vertices to be left bottom and rigth top
             //calculations will be made to transform these vertices
             var properVertices = transformVertices(vertex1, vertex2);
@@ -246,16 +256,12 @@ window.onload = init;
 function rectangle(a, b)
 {
     points.push(a);
-    colors.push( foreGroundColor)
     points.push(new vec2(a[0], b[1]));
-    colors.push( foreGroundColor)
     points.push(b);
-    colors.push( foreGroundColor)
     points.push(new vec2(b[0], a[1]));
-    colors.push( foreGroundColor)
 }
 
-//https://stackoverflow.com/questions/4262417/jquery-hex-to-rgb-calculation-different-between-browsers
+//From: https://stackoverflow.com/questions/4262417/jquery-hex-to-rgb-calculation-different-between-browsers
 function hexToRGB(hexStr){
     // note: hexStr should be #rrggbb
     var hex = parseInt(hexStr.substring(1), 16);
@@ -276,6 +282,9 @@ function textToList(text)
     return rtn;
 }
 
+//Rectangle Method requires coordinates of bottom left corner and top rigth corner
+//Yet User may define a rectagnle in different directions
+//This method transforms given vertex set to acceptable form
 function transformVertices(vertex1, vertex2)
 {
     //4 cases 1 of which is accepted by rectangle method
